@@ -93,7 +93,7 @@ public class GuildHandler {
         eb.setTitle(nr + "\tDaily Report " + new Date());
         eb.addField(padRight("Member", 40) + ".", "", true);
         eb.addField("Days left", "", true);
-        eb.addField("Last Active", "", true);
+        eb.addField(padRight("Last Active", 55) + ".", "", true);
 
         String s1 = null;
         String s2 = null;
@@ -136,7 +136,7 @@ public class GuildHandler {
                 eb.setTitle(nr + "\tDaily Report " + new Date());
                 eb.addField(padRight("Member", 40) + ".", "", true);
                 eb.addField("Days left", "", true);
-                eb.addField("Last Active", "", true);
+                eb.addField(padRight("Last Active", 55) + ".", "", true);
             }
 
             if (getLastActiveDate(id).before(cutoff)) {
