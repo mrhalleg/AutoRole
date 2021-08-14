@@ -1,6 +1,7 @@
 package guild;
 
 import main.AutoBot;
+import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.*;
 
 import java.time.ZoneId;
@@ -80,11 +81,22 @@ public class GuildHandler {
         cal.setTime(new Date());
         cal.add(Calendar.MONTH, -1);
         Date cutoff = cal.getTime();
-        String message = "";
-        message += String.format("%1$-" + 26 + "s", "Member");
-        message += String.format("%1$-" + 10 + "s", "days left");
-        message += "last active";
-        message += "\n\n";
+        String message = "\n";
+        message += "Daily Report " + new Date() + "\n";
+        message += padRight("Member", 30);
+        message += padRight("Days left", 15);
+        message += "Last Active";
+        message += "\n";
+
+        EmbedBuilder eb = new EmbedBuilder();
+        eb.setTitle("Daily Report " + new Date());
+        eb.addField("Member", "", true);
+        eb.addField("Days left", "", true);
+        eb.addField("Last Active", "", true);
+
+        String s1 = null;
+        String s2 = null;
+        String s3 = null;
 
         for (long id : this.config.getLastActive().keySet()) {
             Date lastActive = getLastActiveDate(id);
@@ -96,20 +108,45 @@ public class GuildHandler {
                               .atZone(ZoneId.systemDefault())
                               .toLocalDate());
 
-
-            message += String.format("%1$-" + 30 + "s", getMember(id).getEffectiveName());
-            message += String.format("%1$-" + 10 + "s", kickedIn);
+            message += padRight(getMember(id).getEffectiveName(), 30);
+            message += padRight(kickedIn + "", 15);
             message += lastActive;
-            message += "\n\n";
+            message += "\n";
+
+            if (s1 == null) {
+                s1 = getMember(id).getEffectiveName();
+                s2 = kickedIn + "";
+                s3 = lastActive + "";
+            } else {
+                eb.addField(padRight(getMember(id).getEffectiveName(), 45) + ".",
+                        s1, true);
+                eb.addField(padRight(kickedIn + "", 45) + ".", s2, true);
+                eb.addField(lastActive + "", s3, true);
+
+                s1 = null;
+                s2 = null;
+                s2 = null;
+            }
+
+            if (eb.getFields().size() >= 22) {
+                getOutputChannel().sendMessageEmbeds(eb.build()).queue();
+                eb = new EmbedBuilder();
+            }
+
             if (getLastActiveDate(id).before(cutoff)) {
                 demote(getMember(id));
             }
         }
 
 
-        log("\n" + message);
-        sendMessage(message);
+        log(message);
+        if (eb.getFields().size() > 0) {
+            getOutputChannel().sendMessageEmbeds(eb.build()).queue();
+        }
+    }
 
+    public static String padRight(String s, int n) {
+        return String.format("%-" + n + "s", s);
     }
 
     private Date getLastActiveDate(long id) {
