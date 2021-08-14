@@ -104,14 +104,21 @@ public class GuildHandler {
             eb.addField("", getMember(id).getAsMention(), true);
             eb.addField("", kickedIn + "", true);
             eb.addField("", lastActive + "", true);
+            if (eb.getFields().size() >= 22) {
+                getOutputChannel().sendMessageEmbeds(eb.build()).queue();
+                eb = new EmbedBuilder();
+            }
             if (getLastActiveDate(id).before(cutoff)) {
                 demote(getMember(id));
             }
         }
 
-        log(message);
 
-        getOutputChannel().sendMessage(eb.build()).queue();
+        log(message);
+        if (eb.getFields().size() > 0) {
+            getOutputChannel().sendMessageEmbeds(eb.build()).queue();
+        }
+
     }
 
     private Date getLastActiveDate(long id) {
