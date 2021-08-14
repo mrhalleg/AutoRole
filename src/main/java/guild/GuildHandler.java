@@ -1,7 +1,6 @@
 package guild;
 
 import main.AutoBot;
-import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.*;
 
 import java.time.ZoneId;
@@ -82,12 +81,10 @@ public class GuildHandler {
         cal.add(Calendar.MONTH, -1);
         Date cutoff = cal.getTime();
         String message = "";
-
-        EmbedBuilder eb = new EmbedBuilder();
-
-        eb.addField("Daily Report", "Member", true);
-        eb.addField("", "Days left", true);
-        eb.addField("", "Last Active", true);
+        message += String.format("%1$-" + 26 + "s", "Member");
+        message += String.format("%1$-" + 10 + "s", "days left");
+        message += "last active";
+        message += "\n\n";
 
         for (long id : this.config.getLastActive().keySet()) {
             Date lastActive = getLastActiveDate(id);
@@ -98,26 +95,20 @@ public class GuildHandler {
                     lastActive.toInstant()
                               .atZone(ZoneId.systemDefault())
                               .toLocalDate());
-            String s = getMember(id).getEffectiveName() + " was last active " + lastActive + " and will be demoted in " +
-                    kickedIn + " days.";
-            message += "\n" + s;
-            eb.addField("", getMember(id).getAsMention(), true);
-            eb.addField("", kickedIn + "", true);
-            eb.addField("", lastActive + "", true);
-            if (eb.getFields().size() >= 22) {
-                getOutputChannel().sendMessageEmbeds(eb.build()).queue();
-                eb = new EmbedBuilder();
-            }
+
+
+            message += String.format("%1$-" + 30 + "s", getMember(id).getEffectiveName());
+            message += String.format("%1$-" + 10 + "s", kickedIn);
+            message += lastActive;
+            message += "\n\n";
             if (getLastActiveDate(id).before(cutoff)) {
                 demote(getMember(id));
             }
         }
 
 
-        log(message);
-        if (eb.getFields().size() > 0) {
-            getOutputChannel().sendMessageEmbeds(eb.build()).queue();
-        }
+        log("\n" + message);
+        sendMessage(message);
 
     }
 
