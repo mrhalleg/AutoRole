@@ -1,6 +1,7 @@
 package guild;
 
 import main.AutoBot;
+import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.*;
 
 import java.time.ZoneId;
@@ -82,25 +83,35 @@ public class GuildHandler {
         Date cutoff = cal.getTime();
         String message = "";
 
+        EmbedBuilder eb = new EmbedBuilder();
+
+        eb.addField("Daily Report", "Member", true);
+        eb.addField("", "Days left", true);
+        eb.addField("", "Last Active", true);
+
         for (long id : this.config.getLastActive().keySet()) {
             Date lastActive = getLastActiveDate(id);
-            String kickedIn = ChronoUnit.DAYS.between(
+            long kickedIn = ChronoUnit.DAYS.between(
                     cutoff.toInstant()
                           .atZone(ZoneId.systemDefault())
                           .toLocalDate(),
                     lastActive.toInstant()
                               .atZone(ZoneId.systemDefault())
-                              .toLocalDate()) + "";
+                              .toLocalDate());
             String s = getMember(id).getEffectiveName() + " was last active " + lastActive + " and will be demoted in " +
                     kickedIn + " days.";
             message += "\n" + s;
+            eb.addField("", getMember(id).getAsMention(), true);
+            eb.addField("", kickedIn + "", true);
+            eb.addField("", lastActive + "", true);
             if (getLastActiveDate(id).before(cutoff)) {
                 demote(getMember(id));
             }
         }
 
         log(message);
-        sendMessage(new Date() + " Daily Report: " + message);
+
+        getOutputChannel().sendMessage(eb.build()).queue();
     }
 
     private Date getLastActiveDate(long id) {
