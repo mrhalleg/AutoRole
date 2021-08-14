@@ -33,7 +33,7 @@ public class GuildHandler {
         this.bot = bot;
         this.config = config;
         this.guild = guild;
-
+        printSettings();
         addUnmanaged();
         removeUnnecessary();
     }
@@ -113,6 +113,10 @@ public class GuildHandler {
         return this.guild.getMemberById(id);
     }
 
+    private VoiceChannel getPromotionChannel() {
+        return this.guild.getVoiceChannelById(this.config.getPromotionChannelId());
+    }
+
     private TextChannel getOutputChannel() {
         return this.guild.getTextChannelById(this.config.getOutputChannel());
     }
@@ -152,24 +156,35 @@ public class GuildHandler {
         this.guild.getTextChannelById(this.config.getOutputChannel()).sendMessage(sub).queue();
     }
 
+    private void printSettings() {
+        log("promotion-channel: " + getPromotionChannel().getName());
+        sendMessage("promotion-channel: " + getPromotionChannel().getAsMention());
+
+        log("role: " + getRole().getName());
+        sendMessage("role: " + getRole().getAsMention());
+
+        log("output: " + getOutputChannel().getName());
+        sendMessage("output: " + getOutputChannel().getAsMention());
+    }
+
     private void setPromotionChannelId(long id) {
         this.config.setPromotionChannelId(id);
         log("Set PromotionChannel to " + this.guild.getVoiceChannelById(id).getName());
-        sendMessage("Set PromotionChannel to " + this.guild.getVoiceChannelById(id).getName());
+        sendMessage("Set PromotionChannel to " + this.guild.getVoiceChannelById(id).getAsMention());
         this.bot.saveConfig(this.config);
     }
 
     private void setRoleId(long id) {
         this.config.setRoleId(id);
         log("Set role to " + this.guild.getRoleById(id).getName());
-        sendMessage("Set role to " + this.guild.getRoleById(id).getName());
+        sendMessage("Set role to " + this.guild.getRoleById(id).getAsMention());
         this.bot.saveConfig(this.config);
     }
 
     private void setOutputChannelId(long id) {
         this.config.setOutputChannel(id);
         log("Set role to " + this.guild.getTextChannelById(id).getName());
-        sendMessage("Set role to " + this.guild.getTextChannelById(id).getName());
+        sendMessage("Set role to " + this.guild.getTextChannelById(id).getAsMention());
         this.bot.saveConfig(this.config);
     }
 }
