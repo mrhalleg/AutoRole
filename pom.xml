@@ -93,4 +93,12 @@
             </plugin>
         </plugins>
     </build>
+
+    <distributionManagement>
+        <repository>
+            <id>internal.repo</id>
+            <name>Internal repo</name>
+            <url>file:///var/lib/jenkins/deploy</url>
+        </repository>
+    </distributionManagement>
 </project>
