@@ -89,7 +89,8 @@ public class GuildHandler {
         message += "\n";
 
         EmbedBuilder eb = new EmbedBuilder();
-        eb.setTitle("Daily Report " + new Date());
+        int nr = 1;
+        eb.setTitle(nr + "\tDaily Report " + new Date());
         eb.addField(padRight("Member", 40) + ".", "", true);
         eb.addField("Days left", "", true);
         eb.addField("Last Active", "", true);
@@ -131,6 +132,11 @@ public class GuildHandler {
             if (eb.getFields().size() >= 22) {
                 getOutputChannel().sendMessageEmbeds(eb.build()).queue();
                 eb = new EmbedBuilder();
+                nr++;
+                eb.setTitle(nr + "\tDaily Report " + new Date());
+                eb.addField(padRight("Member", 40) + ".", "", true);
+                eb.addField("Days left", "", true);
+                eb.addField("Last Active", "", true);
             }
 
             if (getLastActiveDate(id).before(cutoff)) {
