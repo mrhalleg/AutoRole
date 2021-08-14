@@ -90,7 +90,7 @@ public class GuildHandler {
 
         EmbedBuilder eb = new EmbedBuilder();
         eb.setTitle("Daily Report " + new Date());
-        eb.addField("Member", "", true);
+        eb.addField(padRight("Member", 40) + ".", "", true);
         eb.addField("Days left", "", true);
         eb.addField("Last Active", "", true);
 
@@ -118,9 +118,9 @@ public class GuildHandler {
                 s2 = kickedIn + "";
                 s3 = lastActive + "";
             } else {
-                eb.addField(padRight(getMember(id).getEffectiveName(), 45) + ".",
+                eb.addField(getMember(id).getEffectiveName(),
                         s1, true);
-                eb.addField(padRight(kickedIn + "", 45) + ".", s2, true);
+                eb.addField(kickedIn + "", s2, true);
                 eb.addField(lastActive + "", s3, true);
 
                 s1 = null;
