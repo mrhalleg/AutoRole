@@ -141,10 +141,10 @@ public class GuildHandler {
 
     public void sendMessage(String message) {
         String sub = "";
-        for (String s : message.split("/n")) {
+        for (String s : message.split("\\n")) {
             if (sub.length() + s.length() > 2000) {
                 this.guild.getTextChannelById(this.config.getOutputChannel()).sendMessage(sub).queue();
-                sub = s;
+                sub = s + "\n";
             } else {
                 sub += s + "\n";
             }
