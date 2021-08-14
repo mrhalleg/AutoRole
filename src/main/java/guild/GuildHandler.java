@@ -140,7 +140,16 @@ public class GuildHandler {
     }
 
     public void sendMessage(String message) {
-        this.guild.getTextChannelById(this.config.getOutputChannel()).sendMessage(message).queue();
+        String sub = "";
+        for (String s : message.split("/n")) {
+            if (sub.length() + s.length() > 2000) {
+                this.guild.getTextChannelById(this.config.getOutputChannel()).sendMessage(sub).queue();
+                sub = s;
+            } else {
+                sub += s + "\n";
+            }
+        }
+        this.guild.getTextChannelById(this.config.getOutputChannel()).sendMessage(sub).queue();
     }
 
     private void setPromotionChannelId(long id) {
