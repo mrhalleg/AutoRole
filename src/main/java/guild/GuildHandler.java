@@ -84,13 +84,15 @@ public class GuildHandler {
 
         for (long id : this.config.getLastActive().keySet()) {
             Date lastActive = getLastActiveDate(id);
-            String s = getMember(id).getEffectiveName() + " was last active " + lastActive + " and will be demoted in " + ChronoUnit.DAYS.between(
+            String kickedIn = ChronoUnit.DAYS.between(
                     cutoff.toInstant()
                           .atZone(ZoneId.systemDefault())
                           .toLocalDate(),
                     lastActive.toInstant()
                               .atZone(ZoneId.systemDefault())
-                              .toLocalDate()) + " days.";
+                              .toLocalDate()) + "";
+            String s = getMember(id).getEffectiveName() + " was last active " + lastActive + " and will be demoted in " +
+                    kickedIn + " days.";
             message += "\n" + s;
             if (getLastActiveDate(id).before(cutoff)) {
                 demote(getMember(id));
