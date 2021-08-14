@@ -80,7 +80,7 @@
                             <archive>
                                 <manifest>
                                     <mainClass>
-                                        halleg.discordmusikbot.App
+                                        main.Main
                                     </mainClass>
                                 </manifest>
                             </archive>
