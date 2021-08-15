@@ -61,7 +61,6 @@ public class AutoBot extends ListenerAdapter {
         if (member.getUser().isBot()) {
             return;
         }
-        System.out.println(member);
         this.guilds.get(member.getGuild().getIdLong()).isActive(member);
     }
 
