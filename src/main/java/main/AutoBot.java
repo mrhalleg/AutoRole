@@ -123,10 +123,7 @@ public class AutoBot extends ListenerAdapter {
 
     @Override
     public void onGuildVoiceLeave(@NotNull GuildVoiceLeaveEvent event) {
-        GuildHandler handler = this.guilds.get(event.getGuild().getIdLong());
-        if (handler != null) {
-            handler.joinedVoice(event.getMember(), event.getVoiceState().getChannel());
-        }
+        isActive(event.getMember());
     }
 
     public void saveConfig(GuildConfig config) {
