@@ -7,6 +7,7 @@ import guild.GuildHandler;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.events.ExceptionEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleAddEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleRemoveEvent;
@@ -73,6 +74,12 @@ public class AutoBot extends ListenerAdapter {
 
     public String getFilename(long l) {
         return l + ".config";
+    }
+
+    @Override
+    public void onException(@NotNull ExceptionEvent event) {
+        System.out.println("Exiting due to Exception " + event.getCause().getMessage());
+        System.exit(1);
     }
 
     @Override

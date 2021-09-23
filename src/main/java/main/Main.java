@@ -24,10 +24,11 @@ public class Main {
         intents.add(GatewayIntent.GUILD_MESSAGES);
         intents.add(GatewayIntent.GUILD_VOICE_STATES);
         JDA jda = JDABuilder.create(intents).setToken(args[0])
-                .setChunkingFilter(ChunkingFilter.ALL)
-                .setMemberCachePolicy(MemberCachePolicy.ALL)
-                .build()
-                .awaitReady();
+                            .setChunkingFilter(ChunkingFilter.ALL)
+                            .setMemberCachePolicy(MemberCachePolicy.ALL)
+                            .setMaxReconnectDelay(60)
+                            .build()
+                            .awaitReady();
 
         AutoBot bot = new AutoBot(jda);
 
