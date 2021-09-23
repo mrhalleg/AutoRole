@@ -34,10 +34,6 @@ public class Main {
 
         jda.addEventListener(bot);
 
-        Calendar today = Calendar.getInstance();
-        today.set(Calendar.HOUR_OF_DAY, 2);
-        today.set(Calendar.MINUTE, 0);
-        today.set(Calendar.SECOND, 0);
 
         Timer timer = new Timer();
         timer.schedule(new TimerTask() {
@@ -45,6 +41,6 @@ public class Main {
             public void run() {
                 bot.checkDemotions();
             }
-        }, today.getTime(), TimeUnit.MILLISECONDS.convert(1, TimeUnit.DAYS));
+        }, new Date(), TimeUnit.MILLISECONDS.convert(1, TimeUnit.DAYS));
     }
 }

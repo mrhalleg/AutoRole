@@ -71,6 +71,7 @@ public class GuildHandler {
     }
 
     public void readAuditLog() {
+        log("reading audit log...");
         this.guild.retrieveAuditLogs().queue(new Consumer<>() {
             @Override
             public void accept(List<AuditLogEntry> auditLogEntries) {
@@ -85,6 +86,7 @@ public class GuildHandler {
     }
 
     public void readMessageHistory() {
+        log("reading message history...");
         for (TextChannel channel : this.guild.getTextChannels()) {
             System.out.println(channel.getName());
             MessageHistory history = channel.getHistory();
@@ -96,6 +98,11 @@ public class GuildHandler {
                 }
                 OffsetDateTime date = message.getTimeCreated();
                 wasActive(member, new Date(date.toInstant().toEpochMilli()));
+                for (MessageReaction react : message.getReactions()) {
+                    for (User user : react.retrieveUsers()) {
+                        wasActive(this.guild.getMember(user), new Date(date.toInstant().toEpochMilli()));
+                    }
+                }
             }
         }
     }
@@ -115,7 +122,6 @@ public class GuildHandler {
         }
         log(member.getEffectiveName() + " was active on " + date);
         this.config.updateDate(member.getIdLong(), date);
-        this.bot.saveConfig(this.config);
     }
 
     public void checkDemotions() {
