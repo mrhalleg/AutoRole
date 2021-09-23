@@ -2,14 +2,17 @@ package guild;
 
 import main.AutoBot;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.audit.AuditLogEntry;
 import net.dv8tion.jda.api.entities.*;
 
+import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.function.Consumer;
 
 
 public class GuildHandler {
@@ -67,6 +70,36 @@ public class GuildHandler {
         this.bot.saveConfig(this.config);
     }
 
+    public void readAuditLog() {
+        this.guild.retrieveAuditLogs().queue(new Consumer<>() {
+            @Override
+            public void accept(List<AuditLogEntry> auditLogEntries) {
+                for (AuditLogEntry entry : auditLogEntries) {
+                    Member member = GuildHandler.this.guild.getMember(entry.getUser());
+                    OffsetDateTime date = entry.getTimeCreated();
+                    wasActive(member, new Date(date.toInstant().toEpochMilli()));
+                }
+            }
+        });
+
+    }
+
+    public void readMessageHistory() {
+        for (TextChannel channel : this.guild.getTextChannels()) {
+            System.out.println(channel.getName());
+            MessageHistory history = channel.getHistory();
+            history.retrievePast(100).complete();
+            for (Message message : history.getRetrievedHistory()) {
+                Member member = message.getMember();
+                if (member == null) {
+                    continue;
+                }
+                OffsetDateTime date = message.getTimeCreated();
+                wasActive(member, new Date(date.toInstant().toEpochMilli()));
+            }
+        }
+    }
+
     public void isActive(Member member) {
         if (!member.getRoles().contains(getRole())) {
             return;
@@ -76,7 +109,20 @@ public class GuildHandler {
         this.bot.saveConfig(this.config);
     }
 
+    public void wasActive(Member member, Date date) {
+        if (!member.getRoles().contains(getRole())) {
+            return;
+        }
+        log(member.getEffectiveName() + " was active on " + date);
+        this.config.updateDate(member.getIdLong(), date);
+        this.bot.saveConfig(this.config);
+    }
+
     public void checkDemotions() {
+        readMessageHistory();
+        readAuditLog();
+
+
         Calendar cal = Calendar.getInstance();
         cal.setTime(new Date());
         cal.add(Calendar.MONTH, -1);
@@ -126,7 +172,6 @@ public class GuildHandler {
 
                 s1 = null;
                 s2 = null;
-                s2 = null;
             }
 
             if (eb.getFields().size() >= 22) {
@@ -149,6 +194,8 @@ public class GuildHandler {
         if (eb.getFields().size() > 0) {
             getOutputChannel().sendMessageEmbeds(eb.build()).queue();
         }
+
+        removeUnnecessary();
     }
 
     public static String padRight(String s, int n) {
@@ -211,14 +258,16 @@ public class GuildHandler {
     }
 
     private void printSettings() {
+        EmbedBuilder eb = new EmbedBuilder();
         log("promotion-channel: " + getPromotionChannel().getName());
-        sendMessage("promotion-channel: " + getPromotionChannel().getAsMention());
+        eb.addField("promotion-channel: ", getPromotionChannel().getAsMention(), false);
 
         log("role: " + getRole().getName());
-        sendMessage("role: " + getRole().getAsMention());
+        eb.addField("role: ", getRole().getAsMention(), false);
 
         log("output: " + getOutputChannel().getName());
-        sendMessage("output: " + getOutputChannel().getAsMention());
+        eb.addField("output: ", getOutputChannel().getAsMention(), false);
+        this.guild.getTextChannelById(this.config.getOutputChannel()).sendMessageEmbeds(eb.build()).queue();
     }
 
     private void setPromotionChannelId(long id) {

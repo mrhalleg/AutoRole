@@ -38,7 +38,11 @@ public class GuildConfig {
     public void updateDate(long idLong) {
         this.lastActive.put(idLong, new Date());
     }
-    
+
+    public void updateDate(long idLong, Date date) {
+        this.lastActive.put(idLong, date);
+    }
+
     public Map<Long, Date> getLastActive() {
         return this.lastActive;
     }
